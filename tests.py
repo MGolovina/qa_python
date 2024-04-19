@@ -112,6 +112,7 @@ class TestBooksCollector:
         collector.books_genre = books_genre
         collector.genre = ['Фантастика', 'Ужасы', 'Детективы', 'Мультфильмы', 'Комедии']
         assert collector.get_books_with_specific_genre(genre) == expected_books
+        
     @pytest.mark.parametrize("book_title", [
         "Унесённые ветром",
         "Урфин Джюс и его деревянные солдаты"
