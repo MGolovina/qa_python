@@ -1,6 +1,5 @@
 import pytest
 from main import BooksCollector
-
 # Класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
 # обязательно указывать префикс Test
 class TestBooksCollector:
@@ -41,9 +40,8 @@ class TestBooksCollector:
     def test_add_new_book_valid(self, book_name):
         collector = BooksCollector()
         collector.add_new_book(book_name)
-        books_genre = collector.get_books_genre()
-        assert book_name in books_genre
-        assert books_genre.get(book_name) == ''
+        assert book_name in collector.get_books_genre()
+        assert collector.get_books_genre().get(book_name) == ''
 
     @pytest.mark.parametrize("invalid_book_name", [
         "",  # Пустая строка
@@ -63,19 +61,17 @@ class TestBooksCollector:
         collector = BooksCollector()
         collector.add_new_book(book_name)
         collector.set_book_genre(book_name, genre)
-        if genre in ['Фантастика', 'Ужасы', 'Детективы', 'Мультфильмы', 'Комедии']:
-            assert collector.get_book_genre(book_name) == genre
-        else:
-            assert collector.get_book_genre(book_name) == ''  # жанр недопустимый-пустая строка
+        expected_genre = genre if genre in ['Фантастика', 'Ужасы', 'Детективы', 'Мультфильмы', 'Комедии'] else ''
+        assert collector.get_book_genre(book_name) == expected_genre
 
-    @pytest.mark.parametrize("book_name, invalid_genre", [
+    @pytest.mark.parametrize("invalid_book_name, invalid_genre", [
         ("Убийство в восточном экспрессе", "Драма")
     ])
-    def test_set_book_genre_invalid(self, book_name, invalid_genre):
+    def test_set_book_genre_invalid(self, invalid_book_name, invalid_genre):
         collector = BooksCollector()
-        collector.add_new_book(book_name)
-        collector.set_book_genre(book_name, invalid_genre)
-        assert collector.get_book_genre(book_name) == ''
+        collector.add_new_book(invalid_book_name)
+        collector.set_book_genre(invalid_book_name, invalid_genre)
+        assert collector.get_book_genre(invalid_book_name) == ''
 
     @pytest.mark.parametrize("book_title, genre", [
         ("Урфин Джюс и его деревянные солдаты", "Мультфильмы"),
@@ -85,10 +81,7 @@ class TestBooksCollector:
         collector = BooksCollector()
         collector.add_new_book(book_title)
         collector.set_book_genre(book_title, genre)
-        if genre in collector.genre_age_rating:
-            assert book_title not in collector.get_books_for_children()
-        else:
-            assert book_title in collector.get_books_for_children()
+        assert (book_title in collector.get_books_for_children()) == (genre not in collector.genre_age_rating)
 
     @pytest.mark.parametrize("books_genre", [
         {},
@@ -110,8 +103,8 @@ class TestBooksCollector:
     def test_get_books_with_specific_genre(self, books_genre, genre, expected_books):
         collector = BooksCollector()
         collector.books_genre = books_genre
-        collector.genre = ['Фантастика', 'Ужасы', 'Детективы', 'Мультфильмы', 'Комедии']
         assert collector.get_books_with_specific_genre(genre) == expected_books
+
     @pytest.mark.parametrize("book_title", [
         "Унесённые ветром",
         "Урфин Джюс и его деревянные солдаты"
@@ -138,7 +131,7 @@ class TestBooksCollector:
         ["Утомленные солнцем", "Утопия"],
         ["Урфин Джюс и его деревянные солдаты"],
     ])
-    def test_get_list_of_favorites_books(self,favorites):
+    def test_get_list_of_favorites_books(self, favorites):
         collector = BooksCollector()
         collector.favorites = favorites
         assert collector.get_list_of_favorites_books() == favorites
